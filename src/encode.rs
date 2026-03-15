@@ -21,3 +21,10 @@ pub fn num_to_binary (num: &u32) -> u32 {
 
     (*num % 2) + 10 * num_to_binary(&(*num / 2))
 }
+
+pub fn encode(input: &String) -> Vec<u32> {
+        let ascii_values = str_to_ascii(&input);
+        let binary_values = to_binary_vec(&ascii_values);
+
+        return binary_values;
+}
