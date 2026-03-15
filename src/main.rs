@@ -3,62 +3,62 @@ mod decode;
 
 use encode::{encode};
 use decode::{decode};
-use std::{fs::{self, File}, io::{self, Write}};
+use std::{io::{self, Write}};
 
 trait Codec {
-    fn encode(&self, input: &String) -> Vec<u32>;
-    // fn decode(&self, input: &Vec<u32>) -> String;
+    fn encode(&self, input: &str) -> Vec<u32>;
+    fn decode(&self, input: &[u32]) -> String;
 }
 
 enum Methods {
     Encode,
-    // Decode,
+    Decode,
 }
 
 struct Converter;
 
 impl Codec for Converter {
-    fn encode(&self, input: &String) -> Vec<u32> {encode(&input)}
+    fn encode(&self, input: &str) -> Vec<u32> {encode(&input)}
+    fn decode(&self, input: &[u32]) -> String {decode(&input)}
 }
 
 impl Converter {
-    fn run(&self, method: Methods, input: &String) -> Vec<u32>{
+    fn run(&self, method: Methods, input: &str) {
         match method {
-            Methods::Encode => self.encode(input),
-            // Methods::Decode => self.decode(input),
+            Methods::Encode => {
+                for val in self.encode(&input) {
+                    print!("{} ", val);
+                }
+                println!();
+            },
+
+            Methods::Decode => {
+                let numbers: Vec<u32> = input
+                    .split_whitespace()
+                    .filter_map(|s| s.parse().ok())
+                    .collect();
+                // println!("{}", self.decode(&numbers))
+                println!("{}", self.decode(&numbers));
+            },
         }
     }
 }
 
 fn main () {
 
+    print!("Mode: ");
+    io::stdout().flush().unwrap();
+    let mut mode = String::new();
+    io::stdin().read_line(&mut mode).expect("Failed to read line");
+
     print!("Enter text to convert to binary: ");
     io::stdout().flush().unwrap();
-
     let mut input = String::new();
-    // let input = fs::read_to_string("./src/input.txt").expect("Failed to read line");
-
     io::stdin().read_line(&mut input).expect("Failed to read line");
 
-    let binary_values = Converter.run(Methods::Encode, &input);
-
-    // let mut file = File::create("./src/numbers.txt").unwrap();
-    // for n in &binary_values {
-        // if *n == 1010 {
-            // writeln!(file, "{} ", n).unwrap();
-            // continue;
-        // }
-        // write!(file, "{} ", n).unwrap();
-    // }
-
-    for (idx, i) in binary_values.iter().enumerate() {
-        if idx == binary_values.len() - 1 {
-            break;
-        }
-
-        print!("{} ",i);
-        io::stdout().flush().unwrap();
+    match mode.trim() {
+        "encode" => Converter.run(Methods::Encode, input.trim()),
+        "decode" => Converter.run(Methods::Decode, input.trim()),
+        _ => println!("Unknown mode"),
     }
-    print!("\n")
-
 }

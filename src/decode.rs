@@ -11,13 +11,13 @@ pub fn binary_to_num (binary: u32) -> u32 {
     result
 }
 
-pub fn ascii_to_str (ascii_values: &Vec<u32>) -> String {
+pub fn ascii_to_str (ascii_values: &[u32]) -> String {
     ascii_values.iter()
         .filter_map(|&n| char::from_u32(n))
         .collect()
 } 
 
-pub fn decode(input: &Vec<u32>) -> String {
+pub fn decode(input: &[u32]) -> String {
     let ascii_values: Vec<u32> = input.iter().map(|&b| binary_to_num(b)).collect();
     ascii_to_str(&ascii_values)
 }
