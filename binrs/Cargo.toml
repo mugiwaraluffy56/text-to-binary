@@ -1,0 +1,27 @@
+[package]
+name = "binrs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Binary encoder, decoder, and analyzer for the command line"
+keywords = ["binary", "hex", "encoding", "bits", "cli"]
+categories = ["command-line-utilities", "encoding"]
+
+[[bin]]
+name = "binrs"
+path = "src/main.rs"
+
+[[bench]]
+name = "encode"
+harness = false
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+codec = { path = "../codec" }
+ops = { path = "../ops" }
+analyze = { path = "../analyze" }
+convert = { path = "../convert" }
+generate = { path = "../generate" }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
