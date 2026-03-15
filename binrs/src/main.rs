@@ -1,6 +1,8 @@
-use clap::{Parser, Subcommand};
+use clap::{CommandFactory, Parser, Subcommand};
+use clap_complete::{Shell, generate};
 use codec::encode::{EncodeOpts, encode};
 use codec::format::Format;
+use std::io;
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -406,6 +408,10 @@ enum Command {
         file: Option<PathBuf>,
         #[arg(num_args(0..))]
         input: Vec<String>,
+    },
+    Completions {
+        #[arg(value_enum)]
+        shell: Shell,
     },
 }
 
@@ -1021,6 +1027,12 @@ fn run() -> Result<(), String> {
                 codec::encode::parse_any_bytes(&text, src_fmt)?
             };
             println!("{}", codec::decode::bytes_to_format(&bytes, to_fmt));
+            Ok(())
+        },
+
+        Command::Completions { shell } => {
+            let mut cmd = Cli::command();
+            generate(shell, &mut cmd, "binrs", &mut io::stdout());
             Ok(())
         },
     }

@@ -53,8 +53,37 @@ jobs:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}
 
+  completions:
+    name: Generate shell completions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Generate completions
+        run: |
+          mkdir -p completions
+          ./target/release/binrs completions bash > completions/binrs.bash
+          ./target/release/binrs completions zsh  > completions/_binrs
+          ./target/release/binrs completions fish > completions/binrs.fish
+          ./target/release/binrs completions powershell > completions/binrs.ps1
+
+      - name: Archive completions
+        run: tar czf binrs-completions.tar.gz -C completions .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binrs-completions
+          path: binrs-completions.tar.gz
+
   release:
-    needs: build
+    needs: [build, completions]
     runs-on: ubuntu-latest
     permissions:
       contents: write

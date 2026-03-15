@@ -17,6 +17,7 @@ harness = false
 
 [dependencies]
 clap = { version = "4.5", features = ["derive"] }
+clap_complete = "4.5"
 codec = { path = "../codec" }
 ops = { path = "../ops" }
 analyze = { path = "../analyze" }
