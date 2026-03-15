@@ -410,6 +410,8 @@ enum Command {
         input: Vec<String>,
     },
     Tobin {
+        #[arg(short = 'f', long, value_name = "FILE")]
+        file: Option<PathBuf>,
         #[arg(short = 'o', long, value_name = "FILE")]
         output: Option<PathBuf>,
         #[arg(num_args(0..))]
@@ -1042,11 +1044,18 @@ fn run() -> Result<(), String> {
             Ok(())
         },
 
-        Command::Tobin { output, input } => {
-            let text = input.join(" ");
-            let bytes = text.as_bytes();
+        Command::Tobin {
+            file,
+            output,
+            input,
+        } => {
+            let bytes = match file {
+                Some(path) => std::fs::read(&path)
+                    .map_err(|e| format!("failed to read '{}': {}", path.display(), e))?,
+                None => input.join(" ").into_bytes(),
+            };
             let dest = output.unwrap_or_else(|| PathBuf::from("output.bin"));
-            std::fs::write(&dest, bytes)
+            std::fs::write(&dest, &bytes)
                 .map_err(|e| format!("failed to write '{}': {}", dest.display(), e))?;
             eprintln!("wrote {} bytes to {}", bytes.len(), dest.display());
             Ok(())
